@@ -6,63 +6,12 @@ import datetime
 import merkle_tree
 from uuid import uuid4
 
-# TODO add merkle tree
 # TODO add try except for all the functions
 # TODO increase consensus time
 
 
-#--------------------COMPONENTS-------------------#
-# Block
-# Timestamp, Merkle root, Hash of the previous block, Transactions{List of transactions}
-# block = {
-#     "Header": {
-#         "Index": len(self.chain) + 1,
-#         "Timestamp": "",
-#         "Merkle root": "",
-#         "Hash of the previous block's header": "",
-#     },
-#     "Transaction": []
-# }
-
-# Transaction
-# Buyer ID, Seller ID, Property ID, Timestamp of the transaction.
-# transaction = {
-#     "Buyer ID": "",
-#     "Seller ID": "",
-#     "Property ID": "",
-#     "Timestamp of the transaction": ""
-# }
-
-# Node(All nodes are miners)
-# Name, ID, Properties_Owned: [list of Properties], number of properties owned: num_prop
-
-# Property History
-# property_history = {
-#     "Property_ID": {
-#         "Owner": "",
-#         "History": []
-#     }
-# }
-# POET
-# Merkle Tree
-# 3 Transactions in each block
-
-#--------------------FUNCTIONS-------------------#
-# 1. Create_Block - Done
-# 2. Create_Node - Done
-# 3. New_Transaction - Done
-# 4. Print_Property_history - Done
-# 5. Print_Nodes - Done
-# 6. Print_BlockChain - Done
-# 7. Poet(Create_Timer) - Done
-# 8. Print_Miner(Print_Leader) - Done
-# 9. Create_Merkle_Tree -
-# 10. Validate_Chain - Done
-# 11. Hash_Block - Done
-# 12. Validate Transaction - Done
-
-# try and accept
 class Land_Blockchain(object):
+    # Constructor
     def __init__(self):
         self.chain = []
         self.transactions = []
@@ -71,7 +20,9 @@ class Land_Blockchain(object):
         self.node_ctr = 1
         self.prop_ctr = 1
 
+    # Create user
     def create_user(self):
+        print()
         self.mine = 0
         try:
             uid = self.node_ctr
@@ -95,18 +46,19 @@ class Land_Blockchain(object):
                 'Properties owned': props
             }
             self.mine = 1
-            print("The node was added to the blockchain")
+            print("The node was added to the blockchain\n")
         except:
-            print("Enter the correct format of data required to add a new node!")
+            print("Enter the correct format of data required to add a new node!\n")
 
+    # Create New Block
     def create_new_block(self, previous_hash=None):
-        mtree = self.hash(self.transactions[:3])
+        mtree = merkle_tree.MerkleTree(self.hash(self.transactions[:3]))
         if (len(self.chain) == 0):
             block = {
                 "Header": {
                     "Index": len(self.chain) + 1,
                     "Timestamp": datetime.datetime.now(),
-                    "Merkle root": mtree,
+                    "Merkle root": mtree.getRootHash(),
                     "previous_hash": 0,
                 },
                 "Transaction": self.transactions[:3]  # 3 transactions
@@ -116,7 +68,7 @@ class Land_Blockchain(object):
                 "Header": {
                     "Index": len(self.chain) + 1,
                     "Timestamp": datetime.datetime.now(),
-                    "Merkle root": mtree,
+                    "Merkle root": mtree.getRootHash(),
                     "previous_hash": self.hash(self.chain[-1]['Header']),
                 },
                 "Transaction": self.transactions[:3]  # 3 transactions
@@ -128,39 +80,36 @@ class Land_Blockchain(object):
 
     # Create transaction
     def create_transaction(self):
-        # Taking the inputs of the transaction data
-        seller = int(input("Enter the Seller ID: "))
-        buyer = int(input("Enter the Receiver ID: "))
-        pid = int(input("Enter the Property ID: "))
-        if (self.validate_transaction(seller, buyer, pid)):
-            print("This Transaction is added and validated...")
-            trans = {
-                "Transaction_ID": str(uuid4()).replace('-', ''),
-                "Timestamp": datetime.datetime.now(),
-                "Seller ID": seller,
-                "Buyer ID": buyer,
-                "Property ID": pid,
-            }
+        try:
+            seller = int(input("\nEnter the Seller ID: "))
+            buyer = int(input("Enter the Receiver ID: "))
+            pid = int(input("Enter the Property ID: "))
+            if (self.validate_transaction(seller, buyer, pid)):
+                print("\nThis Transaction is added and validated\n")
+                trans = {
+                    "Transaction_ID": str(uuid4()).replace('-', ''),
+                    "Timestamp": datetime.datetime.now(),
+                    "Seller ID": seller,
+                    "Buyer ID": buyer,
+                    "Property ID": pid,
+                }
             self.transactions.append(trans)
             self.property_history[pid]["Owner"] = buyer
             self.property_history[pid]["History"].append(trans)
             self.users[seller]['Properties owned'].remove(pid)
             self.users[buyer]['Properties owned'].append(pid)
-            print("Transaction validated")
             if (len(self.transactions) == 3):
-                print("Creating a new block")
                 self.create_timer()
-        else:
-            print("This transaction is not valid!")
+                print("\nCreating a new block\n")
+        except:
+            print("\nPlease enter the correct inputs!\n")
 
-    # Validate transaction
+    # Validate Transaction
     def validate_transaction(self, seller, buyer, pid):
-        for i in self.property_history.keys():
-            if (i == pid):
-                if (seller in self.users[j]["ID"] for j in range(len(self.users))):
-                    if (buyer in self.users[k]["ID"] for k in range(len(self.users))):
-                        if (self.property_history[i]['Owner'] == seller):
-                            return True
+        if pid in self.property_history.keys():
+            if seller in self.users.keys() and buyer in self.users.keys():
+                if self.property_history[pid]['Owner'] == seller:
+                    return True
         return False
 
     # Validate Chain
@@ -168,58 +117,76 @@ class Land_Blockchain(object):
         previous_block = self.chain[0]
         for i in range(1, len(self.chain)):
             current_block = self.chain[i]
+            print("\nHash of Header of Block " + str(i-1) + " : " +
+                  str(self.hash(previous_block['Header'])))
+            print("Hash of Previous Block's Header stored in Block " + str(i) + " : ",
+                  current_block['Header']['previous_hash'])
             if (current_block['Header']['previous_hash'] != self.hash(previous_block['Header'])):
                 return False
             previous_block = current_block
         return True
 
-    # Print block chain
+    # Print Blockchain
     def print_blockchain(self):
+        print()
         for i in range(len(self.chain)):
-            print("Block", i+1, ":", self.chain[i])
+            print("Block", i+1, ":")
+            print("Header: ", self.chain[i]['Header'])
+            print("Transactions: ")
+            for j in range(len(self.chain[i]['Transaction'])):
+                print(self.chain[i]['Transaction'][j])
+            print()
+        print()
 
-    # Print property history
+    # Print Property History
     def print_property_history(self, pid):
+        print()
         for i in self.users.keys():
             if self.users[i]['ID'] == self.property_history[pid]['Owner']:
                 print("The Owner of this property is: " +
                       str(self.users[i]['Name']))
-        print("The transaction history of this property is: " +
-              str(self.property_history[pid]['History']))
+        print("The transaction history of this property is: ")
+        for i in self.property_history[pid]['History']:
+            print(i)
+        print()
 
     # Hash Function
-
     def hash(self, block):
         strg = json.dumps(block, sort_keys=True, default=str).encode()
         return hashlib.sha256(strg).hexdigest()
 
+    # Create Timer for Achieving Consensus
     def create_timer(self):
-        self.minimum = 100000
+        mini = 100000
         for i in self.users.keys():
-            # Generating a random number using the random package of Python.We consider the number(wait time) to be between 1 and 5 seconds.
             n = random.randint(1, 5)
             self.users[i]['wait-time'] = n
-            # Finding out the minimum wait time
-            self.minimum = min(self.minimum, n)
-        # All nodes go for sleep. The node which has the least time would be the leader.
-        print("Acheiving consensus.........................")
-        # We keep the program to sleep for the specified minimum wait time in order to know the leader
-        time.sleep(self.minimum)
+            mini = min(mini, n)
+
+        print("\n-------------------Acheiving consensus-------------------\n")
+        time.sleep(mini)
 
         for i in self.users.keys():
-            if (self.users[i]['wait-time'] == self.minimum):
+            if (self.users[i]['wait-time'] == mini):
                 print(str(
-                    self.users[i]['Name']) + " has the least wait time, thus the leader for the round of consensus and will mine the block.")
+                    self.users[i]['Name']) + " has the least wait time, thus the leader for this round of consensus and will mine the block.\n")
                 self.create_new_block()
                 break
 
+    # Print Users
     def print_nodes(self):
-        print(self.users)
+        print()
+        for i in self.users.keys():
+            print("User ", i, ":")
+            print("Name: ", self.users[i]['Name'])
+            print("Number of properties owned: ",
+                  self.users[i]['Number of properties'])
+            print("Properties owned: ", self.users[i]['Properties owned'])
+        print()
 
 
 if __name__ == '__main__':
     mine = Land_Blockchain()
-    # 4 options to perform different functions
     while True:
         print("1. Create a new user")
         print("2. Create a new transaction")
@@ -242,10 +209,11 @@ if __name__ == '__main__':
             mine.print_nodes()
         elif (choice == 6):
             if (mine.validate_chain()):
-                print("The Blockchain is valid!")
+                print("\nThe Blockchain is valid!\n")
             else:
-                print("The Blockchain is not valid!")
+                print("\nThe Blockchain is not valid!\n")
         elif (choice == 7):
+            print("Hope you had a blast using LAND MINE!!")
             break
         else:
             print("Invalid choice")
