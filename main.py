@@ -47,6 +47,7 @@ class Land_Blockchain(object):
             }
             self.mine = 1
             print("The node was added to the blockchain\n")
+            print(self.users[uid]['Name'] + "'s ID is " + str(self.users[uid]['ID']) + "\n")
         except:
             print("Enter the correct format of data required to add a new node!\n")
 
@@ -84,15 +85,17 @@ class Land_Blockchain(object):
             seller = int(input("\nEnter the Seller ID: "))
             buyer = int(input("Enter the Receiver ID: "))
             pid = int(input("Enter the Property ID: "))
-            if (self.validate_transaction(seller, buyer, pid)):
-                print("\nThis Transaction is added and validated\n")
-                trans = {
-                    "Transaction_ID": str(uuid4()).replace('-', ''),
-                    "Timestamp": datetime.datetime.now(),
-                    "Seller ID": seller,
-                    "Buyer ID": buyer,
-                    "Property ID": pid,
-                }
+            if (not self.validate_transaction(seller, buyer, pid)):
+                print("\nThis Transaction is not valid\n")
+                return
+            print("\nThis Transaction is added and validated\n")
+            trans = {
+                "Transaction_ID": str(uuid4()).replace('-', ''),
+                "Timestamp": datetime.datetime.now(),
+                "Seller ID": seller,
+                "Buyer ID": buyer,
+                "Property ID": pid,
+            }
             self.transactions.append(trans)
             self.property_history[pid]["Owner"] = buyer
             self.property_history[pid]["History"].append(trans)
@@ -106,10 +109,15 @@ class Land_Blockchain(object):
 
     # Validate Transaction
     def validate_transaction(self, seller, buyer, pid):
+        if(seller == buyer):
+            print("You cannot sell the property to yourself")
+            return False
         if pid in self.property_history.keys():
             if seller in self.users.keys() and buyer in self.users.keys():
                 if self.property_history[pid]['Owner'] == seller:
                     return True
+                else:
+                    print("\nThe seller does not own this property!")
         return False
 
     # Validate Chain
@@ -129,6 +137,9 @@ class Land_Blockchain(object):
     # Print Blockchain
     def print_blockchain(self):
         print()
+        if(len(self.chain) == 0):
+            print("Blockchain is empty, please wait for more transactions :)\n")
+            return
         for i in range(len(self.chain)):
             print("Block", i+1, ":")
             print("Header: ", self.chain[i]['Header'])
@@ -140,15 +151,21 @@ class Land_Blockchain(object):
 
     # Print Property History
     def print_property_history(self, pid):
-        print()
-        for i in self.users.keys():
-            if self.users[i]['ID'] == self.property_history[pid]['Owner']:
-                print("The Owner of this property is: " +
-                      str(self.users[i]['Name']))
-        print("The transaction history of this property is: ")
-        for i in self.property_history[pid]['History']:
-            print(i)
-        print()
+        try:
+            print()
+            for i in self.users.keys():
+                if self.users[i]['ID'] == self.property_history[pid]['Owner']:
+                    print("The Owner of this property is: " +
+                        str(self.users[i]['Name']))
+            print("The transaction history of this property is: ")
+            for i in self.property_history[pid]['History']:
+                print(i)
+            print()
+
+        except:
+            print("\nPlease enter the correct inputs!\n")
+
+
 
     # Hash Function
     def hash(self, block):
@@ -159,7 +176,7 @@ class Land_Blockchain(object):
     def create_timer(self):
         mini = 100000
         for i in self.users.keys():
-            n = random.randint(1, 5)
+            n = random.randint(1, 10)
             self.users[i]['wait-time'] = n
             mini = min(mini, n)
 
