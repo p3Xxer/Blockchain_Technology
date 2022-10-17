@@ -104,6 +104,7 @@ class Land_Blockchain(object):
             self.users[seller]['Number of properties'] = self.users[seller]['Number of properties'] - 1
             self.users[buyer]['Properties owned'].append(pid)
             self.users[buyer]['Number of properties'] = self.users[buyer]['Number of properties'] + 1
+
             if (len(self.transactions) == 3):
                 self.create_timer()
                 print("\nCreating a new block\n")
@@ -143,7 +144,7 @@ class Land_Blockchain(object):
     def print_blockchain(self):
         print()
         if (len(self.chain) == 0):
-            print("Blockchain is empty, please wait for more transactions :)\n")
+            print("Blockchain is empty, please add more transactions :)\n")
             return
         for i in range(len(self.chain)):
             print("Block", i+1, ":")
