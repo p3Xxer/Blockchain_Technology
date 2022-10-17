@@ -101,12 +101,14 @@ class Land_Blockchain(object):
             self.property_history[pid]["Owner"] = buyer
             self.property_history[pid]["History"].append(trans)
             self.users[seller]['Properties owned'].remove(pid)
+            self.users[seller]['Number of properties'] = self.users[seller]['Number of properties'] - 1
             self.users[buyer]['Properties owned'].append(pid)
+            self.users[buyer]['Number of properties'] = self.users[buyer]['Number of properties'] + 1
             if (len(self.transactions) == 3):
                 self.create_timer()
                 print("\nCreating a new block\n")
         except:
-            print("\nPlease enter the correct inputs!\n")
+            print("Enter the correct format of data required to add a new transaction!\n")
 
     # Validate Transaction
     def validate_transaction(self, seller, buyer, pid):
@@ -123,6 +125,8 @@ class Land_Blockchain(object):
 
     # Validate Chain
     def validate_chain(self):
+        if (len(self.chain) == 0):
+            return False
         previous_block = self.chain[0]
         for i in range(1, len(self.chain)):
             current_block = self.chain[i]
@@ -186,7 +190,7 @@ class Land_Blockchain(object):
         for i in self.users.keys():
             if (self.users[i]['wait-time'] == mini):
                 print(str(
-                    self.users[i]['Name']) + " has the least wait time, thus the leader for this round of consensus and will mine the block.\n")
+                    self.users[i]['Name']) + " has the least wait time, thus the leader for this round of consensus will mine the block.\n")
                 self.create_new_block()
                 break
 
@@ -194,11 +198,11 @@ class Land_Blockchain(object):
     def print_nodes(self):
         print()
         for i in self.users.keys():
-            print("User ", i, ":")
+            print("User ID: ", i)
             print("Name: ", self.users[i]['Name'])
             print("Number of properties owned: ",
                   self.users[i]['Number of properties'])
-            print("Properties owned: ", self.users[i]['Properties owned'])
+            print("Property IDs: ", self.users[i]['Properties owned'])
         print()
 
 
