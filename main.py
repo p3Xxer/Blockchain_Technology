@@ -47,7 +47,8 @@ class Land_Blockchain(object):
             }
             self.mine = 1
             print("The node was added to the blockchain\n")
-            print(self.users[uid]['Name'] + "'s ID is " + str(self.users[uid]['ID']) + "\n")
+            print(self.users[uid]['Name'] + "'s ID is " +
+                  str(self.users[uid]['ID']) + "\n")
         except:
             print("Enter the correct format of data required to add a new node!\n")
 
@@ -109,7 +110,7 @@ class Land_Blockchain(object):
 
     # Validate Transaction
     def validate_transaction(self, seller, buyer, pid):
-        if(seller == buyer):
+        if (seller == buyer):
             print("You cannot sell the property to yourself")
             return False
         if pid in self.property_history.keys():
@@ -137,7 +138,7 @@ class Land_Blockchain(object):
     # Print Blockchain
     def print_blockchain(self):
         print()
-        if(len(self.chain) == 0):
+        if (len(self.chain) == 0):
             print("Blockchain is empty, please wait for more transactions :)\n")
             return
         for i in range(len(self.chain)):
@@ -156,7 +157,7 @@ class Land_Blockchain(object):
             for i in self.users.keys():
                 if self.users[i]['ID'] == self.property_history[pid]['Owner']:
                     print("The Owner of this property is: " +
-                        str(self.users[i]['Name']))
+                          str(self.users[i]['Name']))
             print("The transaction history of this property is: ")
             for i in self.property_history[pid]['History']:
                 print(i)
@@ -165,9 +166,8 @@ class Land_Blockchain(object):
         except:
             print("\nPlease enter the correct inputs!\n")
 
-
-
     # Hash Function
+
     def hash(self, block):
         strg = json.dumps(block, sort_keys=True, default=str).encode()
         return hashlib.sha256(strg).hexdigest()

@@ -1,4 +1,5 @@
 # Python code for implemementing Merkle Tree
+from mailbox import linesep
 from typing import List
 import hashlib
 
@@ -11,7 +12,6 @@ class Node:
         self.content = content
         self.is_copied = is_copied
 
-    @staticmethod
     def hash(val: str) -> str:
         return hashlib.sha256(val.encode('utf-8')).hexdigest()
 
@@ -19,58 +19,72 @@ class Node:
         return (str(self.value))
 
     def copy(self):
-        """
-        class copy function
-        """
         return Node(self.left, self.right, self.value, self.content, True)
 
 
 class MerkleTree:
     def __init__(self, values: List[str]) -> None:
-        self.__buildTree(values)
+        self.buildTree(values)
 
-    def __buildTree(self, values: List[str]) -> None:
+    def buildTree(self, values: List[str]) -> None:
 
         leaves: List[Node] = [Node(None, None, Node.hash(e), e)
                               for e in values]
         if len(leaves) % 2 == 1:
             # duplicate last elem if odd number of elements
             leaves.append(leaves[-1].copy())
-        self.root: Node = self.__buildTreeRec(leaves)
+        self.root: Node = self.buildTreeRec(leaves)
 
-    def __buildTreeRec(self, nodes: List[Node]) -> Node:
-        if len(nodes) % 2 == 1:
-            # duplicate last elem if odd number of elements
-            nodes.append(nodes[-1].copy())
-        half: int = len(nodes) // 2
+    def buildTreeRec(self, nodes: List[Node]) -> Node:
 
+        # check Dhairya
+        if len(nodes) == 1:
+            return nodes[0]
         if len(nodes) == 2:
             return Node(nodes[0], nodes[1], Node.hash(nodes[0].value + nodes[1].value), nodes[0].content+"+"+nodes[1].content)
+        new_nodes: List[Node] = []
+        for i in range(0, len(nodes), 2):
+            left = nodes[i]
+            right = nodes[i+1]
+            value = Node.hash(left.value + right.value)
+            new_nodes.append(Node(left, right, value, None))
+        return self.buildTreeRec(new_nodes)
 
-        left: Node = self.__buildTreeRec(nodes[:half])
-        right: Node = self.__buildTreeRec(nodes[half:])
-        value: str = Node.hash(left.value + right.value)
-        content: str = f'{left.content}+{right.content}'
-        return Node(left, right, value, content)
+    # def printTree(self) -> None:
+    #     self.__printTreeRec(self.root)
 
-    def printTree(self) -> None:
-        self.__printTreeRec(self.root)
+    # def __printTreeRec(self, node: Node) -> None:
+    #     if node != None:
+    #         if node.left != None:
+    #             print("Left: "+str(node.left))
+    #             print("Right: "+str(node.right))
+    #         else:
+    #             print("Input")
 
-    def __printTreeRec(self, node: Node) -> None:
-        if node != None:
-            if node.left != None:
-                print("Left: "+str(node.left))
-                print("Right: "+str(node.right))
-            else:
-                print("Input")
+    #         if node.is_copied:
+    #             print('(Padding)')
+    #         print("Value: "+str(node.value))
+    #         print("Content: "+str(node.content))
+    #         print("")
+    #         self.__printTreeRec(node.left)
+    #         self.__printTreeRec(node.right)
 
-            if node.is_copied:
-                print('(Padding)')
-            print("Value: "+str(node.value))
-            print("Content: "+str(node.content))
-            print("")
-            self.__printTreeRec(node.left)
-            self.__printTreeRec(node.right)
+    # def getRootHash(self) -> str:
+    #     return self.root.value
 
-    def getRootHash(self) -> str:
-        return self.root.value
+
+# build function
+# def __buildTreeRec(self, nodes: List[Node]) -> Node:
+#         if len(nodes) % 2 == 1:
+#             # duplicate last elem if odd number of elements
+#             nodes.append(nodes[-1].copy())
+#         half: int = len(nodes) // 2
+
+#         if len(nodes) == 2:
+#             return Node(nodes[0], nodes[1], Node.hash(nodes[0].value + nodes[1].value), nodes[0].content+"+"+nodes[1].content)
+
+#         left: Node = self.__buildTreeRec(nodes[:half])
+#         right: Node = self.__buildTreeRec(nodes[half:])
+#         value: str = Node.hash(left.value + right.value)
+#         content: str = f'{left.content}+{right.content}'
+#         return Node(left, right, value, content)
