@@ -5,7 +5,7 @@
 # Khushil Kataria - 2020A7PS2086H
 # Dhairya Agrawal - 2020A7PS0130H
 # Pulkit Agrawal - 2020A7PS2072H
-# Rahil Sanghavi - 2020A72052H
+# Rahil Sanghavi - 2020A7PS2052H
 
 
 
