@@ -1,5 +1,14 @@
 # Blockchain_Technology
 
+
+# Group Details
+# Khushil Kataria - 2020A7PS2086H
+# Dhairya Agrawal - 2020A7PS0130H
+# Pulkit Agrawal - 2020A7PS2072H
+# Rahil Sanghavi - 2020A72052H
+
+
+
 ## Land Management System using Blockchain
 ## The consensus algorithm used is Proof of Elapsed Time (PoET)
 
@@ -38,16 +47,28 @@
 
 ### --------------------FUNCTIONS-------------------
 ### 1. Create_Block
+#### Create a new Block as soon as minimum threshold of transactions occur
 ### 2. Create_Node
+#### Register new users as sellers or miners
 ### 3. New_Transaction
+#### Create a new Transaction
 ### 4. Print_Property_history
+#### Print the details of all the transactions related to a property
 ### 5. Print_Nodes
+#### Print the details of particular user
 ### 6. Print_BlockChain
+#### Print the entire BlockChain network
 ### 7. Poet(Create_Timer)
+#### Implementation of Proof Of Elapsed Time
 ### 8. Print_Miner(Print_Leader)
+#### Print the details of the Miner node selected by POET 
 ### 9. Create_Merkle_Tree
+#### Implement Merkle Tree
 ### 10. Validate_Chain
+#### Validates the Blockchain
 ### 11. Hash_Block
+#### Hashes the data using SHA 256 protocol
 ### 12. Validate Transaction
+#### Validates the transaction and checks for anomalies
 
 
