@@ -13,9 +13,9 @@
 ## The consensus algorithm used is Proof of Elapsed Time (PoET)
 
 ### --------------------COMPONENTS-------------------
-### Block
+## 1. Block
 ### Timestamp, Merkle root, Hash of the previous block, Transactions{List of transactions}
-### block = {f
+### block = {
 ###     "Header": {
 ###         "Index": len(self.chain) + 1,
 ###         "Timestamp": "",
@@ -24,8 +24,8 @@
 ###     },
 ###     "Transaction": []
 ### }
-
-### Transaction
+###
+## 2. Transaction
 ### Buyer ID, Seller ID, Property ID, Timestamp of the transaction.
 ### transaction = {
 ###     "Buyer ID": "",
@@ -33,11 +33,11 @@
 ###     "Property ID": "",
 ###     "Timestamp of the transaction": ""
 ### }
-
-### Node(All nodes are miners)
+###
+## 3. Node(All nodes are miners)
 ### Name, ID, Properties_Owned: [list of Properties], number of properties owned: num_prop
-
-### Property History
+###
+## 4. Property History
 ### property_history = {
 ###     "Property_ID": {
 ###         "Owner": "",
