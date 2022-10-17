@@ -6,9 +6,6 @@ import datetime
 import merkle_tree
 from uuid import uuid4
 
-# TODO add try except for all the functions
-# TODO increase consensus time
-
 
 class Land_Blockchain(object):
     # Constructor
