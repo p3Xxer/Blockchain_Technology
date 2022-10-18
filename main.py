@@ -144,7 +144,7 @@ class Land_Blockchain(object):
             print("Blockchain is empty, please add more transactions :)\n")
             return
         for i in range(len(self.chain)):
-            print("Block", i+1, ":")
+            print("Block", i, ":")
             print("Header: ", self.chain[i]['Header'])
             print("Transactions: ")
             for j in range(len(self.chain[i]['Transaction'])):
